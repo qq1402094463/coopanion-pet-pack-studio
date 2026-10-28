@@ -146,6 +146,7 @@ from macOS/Linux. See [docs/开发说明.md](docs/开发说明.md) for the code 
 
 MIT. See [LICENSE](LICENSE).
 
-This is an independent community tool. It is not affiliated with Pal-AI-Lab or the Coopanion
-project; the names are used only to describe format compatibility. You are responsible for having
-the rights to any artwork you turn into a pack.
+This is an independent community tool. It is not affiliated with, endorsed by, or maintained by
+Pal-AI-Lab or the Coopanion project. "Coopanion" and "Coo" are referenced only to describe
+compatibility with their public figure pack format. Artwork you generate with this tool belongs to
+you; make sure you have the rights to the source images you import.
