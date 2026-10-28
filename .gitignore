@@ -1,0 +1,25 @@
+# ---- 用户数据，绝不提交 ----
+# 你自己做的形象包工程（含素材、原图、打包结果）
+projects/
+# 打出来的 zip
+dist/
+# 本地模型接口与密钥
+studio/ai-config.json
+studio/_dry/
+*.log
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# ---- 系统 / 编辑器 ----
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp

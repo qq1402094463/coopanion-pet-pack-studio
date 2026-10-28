@@ -1,0 +1,55 @@
+name: checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Pillow
+        run: python -m pip install --quiet pillow
+      - name: Compile
+        run: python -m py_compile studio/server.py studio/autogen.py studio/facegen.py studio/tools/make_placeholder.py
+      - name: Import server and validate the template pack
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0, 'studio')
+          import server
+          errors, warnings, info = server.validate_pack('studio/templates/minimal-pack')
+          print('errors:', len(errors), 'warnings:', len(warnings), info)
+          for e in errors:
+              print('  E', e)
+          assert not errors, 'template pack must be importable'
+          PY
+
+  javascript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Check template renderer
+        run: |
+          cp studio/templates/minimal-pack/figure.js /tmp/figure.mjs
+          node --check /tmp/figure.mjs
+      - name: Check inline scripts
+        run: |
+          python3 - <<'PY'
+          import re, pathlib, subprocess, tempfile, os
+          for f in ('studio/web/index.html', 'studio/web/preview.html'):
+              html = pathlib.Path(f).read_text(encoding='utf-8')
+              js = re.search(r'<script>(.*)</script>', html, re.S).group(1)
+              tmp = tempfile.NamedTemporaryFile('w', suffix='.mjs', delete=False, encoding='utf-8')
+              tmp.write(js); tmp.close()
+              subprocess.run(['node', '--check', tmp.name], check=True)
+              os.unlink(tmp.name)
+              print('ok', f)
+          PY

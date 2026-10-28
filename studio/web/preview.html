@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>预览 · Pet Pack Studio</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{
+  --bg:#0d0f18; --panel:#151827; --panel2:#1c2033; --line:#2a2f45;
+  --txt:#e7eaf3; --dim:#8b93ad; --acc:#7c9cff; --ok:#3ecf8e; --warn:#f5b544; --err:#ff6b6b;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);
+  font:14px/1.6 "Microsoft YaHei",system-ui,-apple-system,sans-serif}
+header{display:flex;align-items:center;gap:14px;padding:13px 22px;
+  border-bottom:1px solid var(--line);background:#10131f}
+.logo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#5b7cfa,#c46bff);
+  display:grid;place-items:center;font-weight:800;color:#fff}
+h1{font-size:18px;margin:0}
+.spacer{flex:1}
+a{color:var(--acc);text-decoration:none}
+main{display:grid;grid-template-columns:minmax(380px,1fr) 340px;gap:0;min-height:calc(100vh - 58px)}
+.stage{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:26px}
+canvas{border-radius:14px;border:1px solid var(--line);image-rendering:auto;
+  box-shadow:0 18px 50px rgba(0,0,0,.45)}
+.side{border-left:1px solid var(--line);padding:18px;background:#101320;overflow:auto}
+h2{font-size:12px;margin:0 0 9px;color:var(--dim);font-weight:600;
+  text-transform:uppercase;letter-spacing:1px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:13px;margin-bottom:13px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--panel2);
+  color:var(--txt);border-radius:8px;padding:6px 12px;transition:.15s}
+button:hover{border-color:var(--acc);color:#fff}
+button.on{background:#1a2036;border-color:var(--acc);color:#fff;font-weight:600}
+.row{display:flex;gap:7px;flex-wrap:wrap}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;padding:5px 10px;border-radius:20px;border:1px solid var(--line);
+  background:var(--panel2);cursor:pointer}
+.chip.on{border-color:var(--acc);background:#1a2036;color:#fff}
+.dim{color:var(--dim);font-size:12px}
+.warn{background:#2a2110;border:1px solid #55411f;color:#f7d79a;
+  border-radius:9px;padding:9px 12px;font-size:12.5px;margin-top:9px}
+.ok{color:var(--ok)}
+label{font-size:12px;color:var(--dim);display:block;margin-bottom:5px}
+input[type=range]{width:100%}
+kbd{background:#0b0e18;border:1px solid var(--line);border-radius:4px;padding:0 5px;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">P</div>
+  <h1 id="ttl">预览</h1>
+  <span class="dim" id="sub"></span>
+  <div class="spacer"></div>
+  <a href="/">← 回到制作台</a>
+</header>
+
+<main>
+  <div class="stage">
+    <canvas id="cv" width="380" height="380"></canvas>
+    <div class="row" style="justify-content:center">
+      <button data-mode="idle" class="on">站立</button>
+      <button data-mode="walk">走路</button>
+      <button data-mode="sit">坐着</button>
+      <button data-mode="sleep">睡觉</button>
+      <button id="blinkBtn">眨一下</button>
+    </div>
+    <div class="dim">按 <kbd>空格</kbd> 切换走路，按 <kbd>1</kbd>~<kbd>9</kbd> 切表情</div>
+  </div>
+
+  <div class="side">
+    <div class="card">
+      <h2>这只宠物</h2>
+      <div id="about" class="dim">载入中…</div>
+    </div>
+
+    <div class="card">
+      <h2>表情</h2>
+      <div class="chips" id="faces"></div>
+      <div class="dim" style="margin-top:8px">点一下看脸。没有图的词会显示原脸。</div>
+    </div>
+
+    <div class="card">
+      <h2>显示</h2>
+      <label>大小 <span id="szv">380</span> px</label>
+      <input type="range" id="size" min="120" max="560" value="380">
+      <div class="row" style="margin-top:10px">
+        <button data-bg="checker" class="on">透明格</button>
+        <button data-bg="white">白底</button>
+        <button data-bg="dark">黑底</button>
+      </div>
+      <div class="dim" style="margin-top:8px">桌面一般是浅色或深色壁纸，两种都看一眼。</div>
+    </div>
+
+    <div class="card">
+      <h2>素材</h2>
+      <div id="assets" class="dim"></div>
+    </div>
+
+    <div class="card">
+      <h2>音效</h2>
+      <div class="chips" id="sounds"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+const qs = new URLSearchParams(location.search);
+const pid = qs.get('id') || '';
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+let data = null;
+let mode = 'idle';
+let face = '';
+let blinkUntil = 0;
+let bg = 'checker';
+let walkStart = performance.now();
+const cache = {};
+
+const MODE_FPS = { walk: 0.5 };   // 走路一个完整循环 0.5 秒，跟模板一致
+
+function url(p) { return `/api/packfile?id=${encodeURIComponent(pid)}&p=${encodeURIComponent(p)}`; }
+function img(p) {
+  if (!cache[p]) {
+    cache[p] = new Promise((res) => {
+      const i = new Image();
+      i.onload = () => res(i);
+      i.onerror = () => res(null);
+      i.src = url(p);
+    });
+  }
+  return cache[p];
+}
+
+function has(list, s) { return list.includes(s); }
+
+async function boot() {
+  if (!pid) { document.getElementById('about').textContent = '地址里少了 ?id=项目名'; return; }
+  const r = await fetch(`/api/preview-data?id=${encodeURIComponent(pid)}`, {headers: {'Content-Type': 'application/json'}});
+  data = await r.json();
+  if (data.error) { document.getElementById('about').textContent = data.error; return; }
+
+  document.getElementById('ttl').textContent = data.name || data.id || '预览';
+  document.getElementById('sub').textContent = data.id || '';
+  document.getElementById('about').textContent = data.about || '（清单里没有写 about，AI 就不知道它长什么样）';
+
+  const fc = document.getElementById('faces');
+  const all = [{id: '', name: '原脸'}].concat(data.faces.filter(f => f.id !== 'neutral'));
+  fc.innerHTML = '';
+  all.forEach((f) => {
+    const b = document.createElement('button');
+    b.className = 'chip' + (f.id === face ? ' on' : '');
+    b.textContent = f.name || f.id;
+    b.onclick = () => { face = f.id; [...fc.children].forEach(x => x.classList.remove('on')); b.classList.add('on'); };
+    fc.appendChild(b);
+  });
+
+  const a = document.getElementById('assets');
+  const y = (v) => v ? '<span class="ok">有</span>' : '<span style="color:#ff6b6b">缺</span>';
+  a.innerHTML = [
+    `主图 ${y(data.has.body)}`,
+    `走路帧 ${data.walk.length} 张`,
+    `坐姿 ${y(data.has.sit)}`,
+    `睡姿 ${y(data.has.sleep)}`,
+    `表情图 ${data.faces.length} 张`,
+    `音效 ${data.sounds.length} 个`,
+  ].join('<br>');
+  if (!data.walk.length) {
+    a.insertAdjacentHTML('afterend', '<div class="warn">没有走路帧，走路时会一直用站立图平移，看着像贴纸在地上滑。</div>');
+  }
+  if (!data.has.sit) a.insertAdjacentHTML('afterend', '<div class="warn">没有坐姿图，蹲下时还是站着的样子。</div>');
+
+  const sc = document.getElementById('sounds');
+  if (!data.sounds.length) {
+    sc.innerHTML = '<span class="dim">没放音效。Coopanion 会用自带的合成音，不算错。</span>';
+  } else {
+    data.sounds.forEach((n) => {
+      const b = document.createElement('button');
+      b.className = 'chip'; b.textContent = n;
+      b.onclick = () => playSound(n);
+      sc.appendChild(b);
+    });
+  }
+
+  document.querySelectorAll('[data-mode]').forEach((b) => {
+    b.onclick = () => setMode(b.dataset.mode);
+  });
+  document.getElementById('blinkBtn').onclick = () => { blinkUntil = performance.now() + 160; };
+  document.querySelectorAll('[data-bg]').forEach((b) => {
+    b.onclick = () => { bg = b.dataset.bg; document.querySelectorAll('[data-bg]').forEach(x => x.classList.toggle('on', x === b)); };
+  });
+  const size = document.getElementById('size');
+  size.oninput = () => {
+    cv.width = cv.height = +size.value;
+    document.getElementById('szv').textContent = size.value;
+  };
+  addEventListener('keydown', (e) => {
+    if (e.code === 'Space') { e.preventDefault(); setMode(mode === 'walk' ? 'idle' : 'walk'); }
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 9 && all[n]) { face = all[n].id; [...fc.children].forEach((x, i) => x.classList.toggle('on', i === n)); }
+  });
+  requestAnimationFrame(loop);
+}
+
+function setMode(m) {
+  mode = m;
+  walkStart = performance.now();
+  document.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('on', b.dataset.mode === m));
+}
+
+function playSound(n) {
+  const file = (data.soundFiles || {})[n] || ('sounds/' + n + '.wav');
+  const a = new Audio(url(file));
+  a.volume = 0.5;
+  a.play().catch(() => {});
+}
+
+let checker = null;
+function paintBg() {
+  if (bg === 'white') { ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, cv.width, cv.height); return; }
+  if (bg === 'dark') { ctx.fillStyle = '#2b2b33'; ctx.fillRect(0, 0, cv.width, cv.height); return; }
+  if (!checker) {
+    const t = document.createElement('canvas');
+    t.width = t.height = 28;
+    const tc = t.getContext('2d');
+    tc.fillStyle = '#20243a'; tc.fillRect(0, 0, 28, 28);
+    tc.fillStyle = '#171b2c'; tc.fillRect(0, 0, 14, 14); tc.fillRect(14, 14, 14, 14);
+    checker = ctx.createPattern(t, 'repeat');
+  }
+  ctx.fillStyle = checker;
+  ctx.fillRect(0, 0, cv.width, cv.height);
+}
+
+async function currentImage() {
+  if (!data) return null;
+  if (mode === 'walk' && data.walk.length) {
+    const per = MODE_FPS.walk / data.walk.length * 1000;
+    const i = Math.floor((performance.now() - walkStart) / per) % data.walk.length;
+    return img('tex/' + data.walk[i]);
+  }
+  if (mode === 'sit' && data.has.sit) return img('tex/sit.png');
+  if (mode === 'sleep' && data.has.sleep) return img('tex/sleep.png');
+  const blinking = performance.now() < blinkUntil;
+  if (blinking && has(data.faces.map(f => f.id), 'sleepy')) return img('tex/face-sleepy.png');
+  if (face && has(data.faces.map(f => f.id), face)) return img('tex/face-' + face + '.png');
+  return img('tex/body.png');
+}
+
+async function loop() {
+  if (data) {
+    const im = await currentImage();
+    paintBg();
+    if (im) {
+      const k = Math.min(cv.width / im.width, cv.height / im.height);
+      const w = im.width * k, h = im.height * k;
+      // 所有贴图都是 512 方图、人物底部对齐，按底边贴才不会飘
+      ctx.drawImage(im, (cv.width - w) / 2, cv.height - h, w, h);
+    } else {
+      ctx.fillStyle = '#8b93ad';
+      ctx.font = '14px "Microsoft YaHei"';
+      ctx.textAlign = 'center';
+      ctx.fillText('没有主图（tex/body.png）', cv.width / 2, cv.height / 2);
+    }
+  }
+  requestAnimationFrame(loop);
+}
+
+boot();
+</script>
+</body>
+</html>

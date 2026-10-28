@@ -1,0 +1,307 @@
+{
+  "manifest": 2,
+  "api": 2,
+  "id": "mypet",
+  "version": "1.0.0",
+  "name": {
+    "zh": "我的宠物",
+    "en": "My Pet"
+  },
+  "about": {
+    "zh": "一只圆滚滚的浅蓝色小生物，个子不高，眼睛很大，走路会一颠一颠。它不会说话，只会用表情和动作回应你。开心时会跳，困了会趴下睡，被拎起来会挣扎。",
+    "en": "A round little light-blue creature. Big eyes, short legs, bobs when it walks. It does not speak; it answers with faces and small motions."
+  },
+  "author": "替换成你的名字",
+  "license": "CC-BY-4.0",
+  "entry": "figure.js",
+  "export": "createMyPet",
+  "thumb": "thumb.png",
+  "axes": [],
+  "presets": [],
+  "vocab": [
+    {
+      "id": "neutral",
+      "kind": "expression",
+      "names": {
+        "zh": [
+          "平静"
+        ]
+      },
+      "about": {
+        "zh": "默认的脸，眼睛睁着，没有特别情绪",
+        "en": "the default face"
+      },
+      "seconds": 0.9
+    },
+    {
+      "id": "happy",
+      "kind": "expression",
+      "names": {
+        "zh": [
+          "开心"
+        ]
+      },
+      "about": {
+        "zh": "眼睛弯成 ^ ^，脸颊泛红",
+        "en": "eyes curve into ^ ^, cheeks blush"
+      },
+      "seconds": 0.9
+    },
+    {
+      "id": "wink",
+      "kind": "expression",
+      "names": {
+        "zh": [
+          "眨眼"
+        ]
+      },
+      "about": {
+        "zh": "一只眼睛闭上，另一只睁着",
+        "en": "one eye closes, the other stays open"
+      },
+      "seconds": 0.9
+    },
+    {
+      "id": "love",
+      "kind": "expression",
+      "names": {
+        "zh": [
+          "喜欢"
+        ]
+      },
+      "about": {
+        "zh": "眼睛变成心形，头顶冒小心心",
+        "en": "heart-shaped eyes with little hearts floating up"
+      },
+      "seconds": 1.2
+    },
+    {
+      "id": "shy",
+      "kind": "expression",
+      "names": {
+        "zh": [
+          "害羞"
+        ]
+      },
+      "about": {
+        "zh": "脸红，眼神躲开不敢看你",
+        "en": "blushes and looks away"
+      },
+      "seconds": 1.2
+    },
+    {
+      "id": "surprised",
+      "kind": "expression",
+      "names": {
+        "zh": [
+          "惊讶"
+        ]
+      },
+      "about": {
+        "zh": "眼睛瞪大，头顶冒出感叹号",
+        "en": "eyes go wide, an exclamation mark overhead"
+      },
+      "seconds": 0.9
+    },
+    {
+      "id": "angry",
+      "kind": "expression",
+      "names": {
+        "zh": [
+          "生气"
+        ]
+      },
+      "about": {
+        "zh": "皱起眉毛，头顶怒气符号，身体发抖",
+        "en": "frowns, anger mark overhead, body shaking"
+      },
+      "seconds": 1.2
+    },
+    {
+      "id": "sad",
+      "kind": "expression",
+      "names": {
+        "zh": [
+          "难过"
+        ]
+      },
+      "about": {
+        "zh": "眉毛垂下，会掉眼泪",
+        "en": "brows slant down, tears fall"
+      },
+      "seconds": 1.5
+    },
+    {
+      "id": "sleepy",
+      "kind": "expression",
+      "names": {
+        "zh": [
+          "犯困"
+        ]
+      },
+      "about": {
+        "zh": "眯着眼打哈欠，快睡着了",
+        "en": "squints and yawns"
+      },
+      "seconds": 1.2
+    },
+    {
+      "id": "smug",
+      "kind": "expression",
+      "names": {
+        "zh": [
+          "得意"
+        ]
+      },
+      "about": {
+        "zh": "眯起眼睛斜着看你，嘴角带笑",
+        "en": "a narrowed sidelong look with a smirk"
+      },
+      "seconds": 1.2
+    },
+    {
+      "id": "pout",
+      "kind": "expression",
+      "names": {
+        "zh": [
+          "嘟嘴"
+        ]
+      },
+      "about": {
+        "zh": "嘴嘟起来，脸红，扭头不看你",
+        "en": "pouts, blushes, turns away"
+      },
+      "seconds": 1.2
+    },
+    {
+      "id": "excited",
+      "kind": "expression",
+      "names": {
+        "zh": [
+          "期待"
+        ]
+      },
+      "about": {
+        "zh": "眼睛发亮冒出星星，明显很期待",
+        "en": "eyes sparkle with stars"
+      },
+      "seconds": 1.2
+    },
+    {
+      "id": "jump",
+      "kind": "motion",
+      "names": {
+        "zh": [
+          "跳"
+        ]
+      },
+      "about": {
+        "zh": "原地跳一下，落地时压扁再弹回",
+        "en": "one hop up and back down"
+      },
+      "seconds": 1
+    },
+    {
+      "id": "nod",
+      "kind": "motion",
+      "names": {
+        "zh": [
+          "点头"
+        ]
+      },
+      "about": {
+        "zh": "上下点头，表示同意",
+        "en": "nods, agreeing"
+      },
+      "seconds": 0.8
+    },
+    {
+      "id": "shake",
+      "kind": "motion",
+      "names": {
+        "zh": [
+          "摇头"
+        ]
+      },
+      "about": {
+        "zh": "左右摇头，表示不同意",
+        "en": "shakes its head, disagreeing"
+      },
+      "seconds": 0.8
+    },
+    {
+      "id": "spin",
+      "kind": "motion",
+      "names": {
+        "zh": [
+          "转圈"
+        ]
+      },
+      "about": {
+        "zh": "原地转一圈",
+        "en": "spins once on the spot"
+      },
+      "seconds": 1.2
+    },
+    {
+      "id": "sit",
+      "kind": "motion",
+      "names": {
+        "zh": [
+          "坐下"
+        ]
+      },
+      "about": {
+        "zh": "坐下来休息",
+        "en": "sits down"
+      },
+      "seconds": 1.5
+    },
+    {
+      "id": "sleep",
+      "kind": "motion",
+      "names": {
+        "zh": [
+          "睡觉"
+        ]
+      },
+      "about": {
+        "zh": "躺下睡着，头顶冒 Z",
+        "en": "lies down and sleeps, z's overhead"
+      },
+      "seconds": 2
+    },
+    {
+      "id": "wave",
+      "kind": "motion",
+      "names": {
+        "zh": [
+          "挥手"
+        ]
+      },
+      "about": {
+        "zh": "抬起手左右挥，打招呼",
+        "en": "raises a hand and waves"
+      },
+      "seconds": 1.2
+    },
+    {
+      "id": "dance",
+      "kind": "motion",
+      "names": {
+        "zh": [
+          "跳舞"
+        ]
+      },
+      "about": {
+        "zh": "原地左右摇摆地跳舞",
+        "en": "dances, swaying side to side"
+      },
+      "seconds": 2
+    }
+  ],
+  "sounds": {},
+  "can": {
+    "walk": true
+  }
+}

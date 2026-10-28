@@ -1,0 +1,16 @@
+# 换行符策略：后面的规则覆盖前面的
+* text=auto eol=lf
+
+# 批处理按二进制存，保证 blob 里就是 CRLF，下载下来双击能跑
+*.bat -text
+*.cmd -text
+*.sh text eol=lf
+
+# 二进制，不要做换行和 diff 转换
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.wav binary
+*.zip binary
+*.ico binary

@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Pet Pack Studio · Coopanion 形象包制作台</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{
+  --bg:#0d0f18; --panel:#151827; --panel2:#1c2033; --line:#2a2f45;
+  --txt:#e7eaf3; --dim:#8b93ad; --acc:#7c9cff; --ok:#3ecf8e; --warn:#f5b544; --err:#ff6b6b;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);
+  font:14px/1.6 "Microsoft YaHei",system-ui,-apple-system,sans-serif}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--panel2);
+  color:var(--txt);border-radius:8px;padding:7px 14px;transition:.15s}
+button:hover{border-color:var(--acc);color:#fff}
+button.primary{background:linear-gradient(135deg,#5b7cfa,#8e6bff);border:none;color:#fff;font-weight:600}
+button.primary:hover{filter:brightness(1.12)}
+button.ghost{background:transparent}
+button.fix{background:#1d2b23;border-color:#2f6b47;color:#7ce0a4;font-weight:600}
+button.fix:hover{border-color:#54c789;color:#a8f5c6}
+button:disabled{opacity:.45;cursor:not-allowed}
+input,textarea{font:inherit;background:#0b0e18;border:1px solid var(--line);
+  color:var(--txt);border-radius:8px;padding:8px 11px;width:100%;outline:none}
+input:focus,textarea:focus{border-color:var(--acc)}
+textarea{resize:vertical;min-height:90px}
+h1{font-size:19px;margin:0;letter-spacing:.5px}
+h2{font-size:14px;margin:0 0 10px;color:var(--dim);font-weight:600;
+  text-transform:uppercase;letter-spacing:1px}
+code{background:#0b0e18;padding:1px 6px;border-radius:4px;color:#9fb3ff;font-size:12px}
+header{display:flex;align-items:center;gap:14px;padding:14px 22px;
+  border-bottom:1px solid var(--line);background:#10131f;position:sticky;top:0;z-index:9}
+.logo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#5b7cfa,#c46bff);
+  display:grid;place-items:center;font-weight:800;color:#fff}
+.spacer{flex:1}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--dim);margin-right:6px}
+.dot.on{background:var(--ok);box-shadow:0 0 8px var(--ok)}
+main{display:grid;grid-template-columns:260px 1fr;gap:0;height:calc(100vh - 61px)}
+aside{border-right:1px solid var(--line);padding:16px;overflow:auto;background:#101320}
+section{padding:18px 24px;overflow:auto}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:16px;margin-bottom:16px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.proj{padding:10px 12px;border-radius:9px;border:1px solid transparent;cursor:pointer;
+  margin-bottom:6px;background:var(--panel)}
+.proj:hover{border-color:var(--line)}
+.proj.on{border-color:var(--acc);background:#1a2036}
+.proj .t{font-weight:600}
+.proj .s{font-size:12px;color:var(--dim)}
+.tag{font-size:11px;padding:1px 7px;border-radius:20px;border:1px solid var(--line);color:var(--dim)}
+.tag.err{color:var(--err);border-color:#54283a}
+.tag.ok{color:var(--ok);border-color:#1f4a38}
+.drop{border:1.5px dashed var(--line);border-radius:12px;padding:26px;text-align:center;
+  color:var(--dim);transition:.15s;background:#0b0e18}
+.drop.hot{border-color:var(--acc);background:#131a30;color:var(--txt)}
+.zones{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.zone{position:relative;border:1.5px dashed var(--line);border-radius:11px;padding:12px 13px 10px;
+  background:#0b0e18;cursor:pointer;transition:.15s;min-height:74px}
+.zone:hover{border-color:var(--acc);background:#131a30}
+.zone.hot{border-color:var(--acc);background:#131a30}
+.zone .zt{font-size:13.5px;font-weight:600;color:var(--txt)}
+.zone .zs{font-size:11px;color:var(--dim);margin-top:3px;line-height:1.5}
+.zone .zc{position:absolute;right:10px;top:9px;font-size:11px;color:#0b0e18;background:var(--dim);
+  border-radius:9px;padding:1px 7px;font-weight:600}
+.zone.ok .zc{background:var(--ok);color:#06140d}
+.zone.ok{border-style:solid;border-color:#1f4a38}
+.thumbs{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.thumb{width:84px;position:relative;text-align:center}
+.thumb img{width:84px;height:84px;object-fit:contain;background:
+  repeating-conic-gradient(#1b2032 0% 25%,#141827 0% 50%) 50%/12px 12px;
+  border:1px solid var(--line);border-radius:9px}
+.thumb.main img{border-color:var(--ok)}
+.thumb .n{font-size:11px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.thumb button{width:100%;padding:2px;font-size:11px;margin-top:3px}
+.msg{border-radius:9px;padding:10px 13px;margin-top:10px;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.msg.err{background:#2a1420;border:1px solid #55243a;color:#ffb3b3}
+.msg.ok{background:#10261d;border:1px solid #1f4a38;color:#a8f0cd}
+.msg.warn{background:#2a2110;border:1px solid #55411f;color:#f7d79a}
+.msg.info{background:#131a30;border:1px solid #2a3556;color:#b9c6f0}
+ul.clean{margin:6px 0 0;padding-left:18px}
+ul.clean li{margin:3px 0}
+.hint{font-size:12px;color:var(--dim);margin-top:6px}
+.bar{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.hidden{display:none}
+kbd{background:#0b0e18;border:1px solid var(--line);border-radius:4px;padding:0 5px;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">P</div>
+  <h1>Pet Pack Studio<span style="color:var(--dim);font-weight:400;font-size:13px"> · Coopanion 形象包制作台</span></h1>
+  <div class="spacer"></div>
+  <span id="apiState"><span class="dot"></span>接口未配置</span>
+  <button class="ghost" onclick="openPreview()">预览效果</button>
+  <button class="ghost" onclick="openFolder()">打开工具文件夹</button>
+</header>
+
+<main>
+<aside>
+  <h2>项目</h2>
+  <div class="row" style="margin-bottom:10px">
+    <input id="newId" placeholder="项目 id，如 my-cat">
+  </div>
+  <div class="row" style="margin-bottom:12px">
+    <input id="newName" placeholder="显示名字，如 小蓝">
+  </div>
+  <button class="primary" style="width:100%" onclick="createProject()">＋ 新建项目</button>
+  <div id="projList" style="margin-top:14px"></div>
+  <div class="hint" style="margin-top:18px">
+    项目 id 只能小写字母、数字、横杠。<br>
+    它就是形象包的 id，导入后不能和别的包重名。
+  </div>
+</aside>
+
+<section>
+  <div id="envWarn"></div>
+  <!-- API -->
+  <div class="card">
+    <h2>第一步 · 接上大模型</h2>
+    <div class="grid3">
+      <input id="apiBase" placeholder="接口地址，如 https://api.xxx.com/v1">
+      <input id="apiKey" placeholder="API Key（只存在本机）" type="password">
+      <input id="apiModel" placeholder="模型名，如 deepseek-chat">
+    </div>
+    <div class="bar">
+      <button class="primary" onclick="saveConfig()">保存并测速</button>
+      <span class="hint" style="margin:0">任何 OpenAI 兼容接口都行。地址写到 <code>/v1</code> 即可，不用写全路径。</span>
+    </div>
+    <div id="cfgMsg"></div>
+  </div>
+
+  <div id="work" class="hidden">
+    <!-- assets -->
+    <div class="card">
+      <h2>第二步 · 分区放素材</h2>
+      <div class="row" style="margin-bottom:10px">
+        <strong id="curProj" style="font-size:15px"></strong>
+        <span class="spacer"></span>
+        <button class="ghost" onclick="showPack()">在资源管理器里打开包</button>
+      </div>
+
+      <div class="zones">
+        <div class="zone" data-slot="body" onclick="pick('body')">
+          <div class="zt">主图</div>
+          <div class="zs">1 张透明底全身图，必填</div>
+          <div class="zc" id="zc-body">0</div>
+        </div>
+        <div class="zone" data-slot="walk" onclick="pick('walk')">
+          <div class="zt">走路帧</div>
+          <div class="zs">3 到 8 张，按点击顺序排</div>
+          <div class="zc" id="zc-walk">0</div>
+        </div>
+        <div class="zone" data-slot="face" onclick="pick('face')">
+          <div class="zt">表情图</div>
+          <div class="zs">文件名写 face_happy.png</div>
+          <div class="zc" id="zc-face">0</div>
+        </div>
+        <div class="zone" data-slot="sit" onclick="pick('sit')">
+          <div class="zt">坐姿</div>
+          <div class="zs">1 张</div>
+          <div class="zc" id="zc-sit">0</div>
+        </div>
+        <div class="zone" data-slot="sleep" onclick="pick('sleep')">
+          <div class="zt">睡姿</div>
+          <div class="zs">1 张</div>
+          <div class="zc" id="zc-sleep">0</div>
+        </div>
+        <div class="zone" data-slot="sound" onclick="pick('sound')">
+          <div class="zt">音效</div>
+          <div class="zs">文件名就是音效名</div>
+          <div class="zc" id="zc-sound">0</div>
+        </div>
+      </div>
+      <input type="file" id="zoneInput" multiple class="hidden">
+      <div class="hint" style="margin-top:8px">
+        表情 id 只能是：happy wink love shy surprised angry sad sleepy thinking smug pout
+        worried determined flustered scared excited cry confused neutral。文件名里认不出的，会被挡下来。
+      </div>
+
+      <div class="bar">
+        <button class="primary" onclick="autoFill()">一键补齐：走路 + 坐睡 + 20 音效</button>
+        <span class="hint" style="margin:0">只补缺的。走路是程序变形，能看但不如手绘，随时可换成真图</span>
+      </div>
+      <div id="autoMsg"></div>
+
+      <div class="bar">
+        <button onclick="document.getElementById('videoInput').click()">上传视频抽帧</button>
+        <input type="file" id="videoInput" accept="video/*" class="hidden">
+        <span class="hint" style="margin:0">一段正面走路视频，抽出来的帧比程序生成的自然是目前最好的办法</span>
+      </div>
+
+      <div class="thumbs" id="thumbs"></div>
+      <div id="assetMsg"></div>
+    </div>
+
+    <!-- ai -->
+    <div class="card">
+      <h2>第三步 · 让 AI 写清单</h2>
+      <textarea id="brief" placeholder="用一句话说清你要的宠物。例如：
+一只圆滚滚的橘猫，耳朵缺一角，走路一摇一摆，生气会炸毛，喜欢趴着睡。"></textarea>
+      <div class="hint" style="margin:0 0 10px">
+        别写「小女孩」「幼童」这类词。模型会误判成不合适的内容，直接拒绝。
+        改成「Q 版卡通角色」「Q 版人物」就行。
+      </div>
+      <div class="bar">
+        <button class="primary" onclick="aiGenerate()">AI 生成 figure.json</button>
+        <button onclick="validate()">只校验，不生成</button>
+        <span class="hint" style="margin:0">AI 只改清单里的名字、描述和词表。figure.js 用模板，不动</span>
+      </div>
+      <div id="aiMsg"></div>
+    </div>
+
+    <!-- package -->
+    <div class="card">
+      <h2>第四步 · 检查并打包</h2>
+      <div class="bar">
+        <button onclick="validate()">检查这一包</button>
+        <button class="fix" onclick="autofix()">一键修复清单</button>
+        <button class="primary" onclick="pack()">打包成 zip</button>
+        <button class="ghost" onclick="openDist()">打开输出文件夹</button>
+        <button class="ghost" onclick="cleanFaces()">挪走模板占位表情</button>
+      </div>
+      <div id="packMsg"></div>
+      <div class="hint" style="margin-top:12px">
+        打包后在 Coopanion 里：装扮 → 导入形象包 → 选择 zip 文件。
+        不通过就先看红色清单，改完再打一次。
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+let cur = null, cfgs = {}, assets = [];
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function msg(box, kind, text) {
+  const el = $(box);
+  if (!text) { el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="msg ${kind}">${esc(text)}</div>`;
+}
+function msgList(box, kind, title, items) {
+  if (!items || !items.length) { return; }
+  const el = $(box);
+  el.insertAdjacentHTML('beforeend',
+    `<div class="msg ${kind}"><b>${esc(title)}</b><ul class="clean">` +
+    items.map(i => `<li>${esc(i)}</li>`).join('') + '</ul></div>');
+}
+async function api(path, body) {
+  const r = await fetch(path, {
+    method: body ? 'POST' : 'GET',
+    headers: {'Content-Type': 'application/json'},
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  let j = {};
+  try { j = await r.json(); } catch (e) {}
+  if (!r.ok) {
+    let m = j.error || ('HTTP ' + r.status) + (j.errors ? '\n' + j.errors.join('\n') : '');
+    if (j.raw) m += '\n\n模型原话：' + String(j.raw).slice(0, 200);
+    throw new Error(m);
+  }
+  return j;
+}
+
+/* ---------- config ---------- */
+async function loadEnv() {
+  let e = {};
+  try { e = await api('/api/env'); } catch (err) { return; }
+  const miss = [];
+  if (!e.pillow) miss.push('Pillow（表情生成、视频抠图、缩略图都要它）：<code>python -m pip install pillow</code>');
+  if (!e.ffmpeg) miss.push('ffmpeg（视频抽帧）：<code>winget install Gyan.FFmpeg</code>，不想装就用截图代替');
+  if (!miss.length) { $('envWarn').innerHTML = ''; return; }
+  $('envWarn').innerHTML = `<div class="msg warn"><b>环境缺东西，部分功能用不了</b>
+    <ul class="clean">${miss.map(m => `<li>${m}</li>`).join('')}</ul>
+    装完关掉黑窗口重新启动一次。<br>
+    <span style="opacity:.75">当前 Python：${esc(e.exe || '')}</span></div>`;
+}
+async function loadConfig() {
+  cfgs = await api('/api/config');
+  $('apiBase').value = cfgs.base || '';
+  $('apiModel').value = cfgs.model || '';
+  $('apiKey').placeholder = cfgs.hasKey ? '已保存，留空则不改' : 'API Key（只存在本机）';
+  $('apiState').innerHTML = cfgs.hasKey
+    ? '<span class="dot on"></span>接口已配置'
+    : '<span class="dot"></span>接口未配置';
+}
+async function saveConfig() {
+  msg('cfgMsg', 'info', '正在请求模型，验证地址和 Key…');
+  try {
+    await api('/api/config', {
+      base: $('apiBase').value.trim(),
+      key: $('apiKey').value.trim(),
+      model: $('apiModel').value.trim(),
+    });
+    const r = await api('/api/ping', {});
+    $('apiKey').value = '';
+    await loadConfig();
+    msg('cfgMsg', 'ok', `通了。模型回了一句「${r.reply || 'ok'}」，用时 ${r.ms} ms。`);
+  } catch (e) {
+    msg('cfgMsg', 'err', '配置没通：' + e.message);
+  }
+}
+
+/* ---------- projects ---------- */
+async function loadProjects() {
+  const list = await api('/api/projects');
+  $('projList').innerHTML = list.length ? list.map(p => `
+    <div class="proj ${cur === p.id ? 'on' : ''}" onclick="selectProject('${p.id}')">
+      <div class="t">${esc(p.id)}</div>
+      <div class="s">${p.assets.length} 张素材 · ${p.words} 个词
+        ${p.errors ? `<span class="tag err">${p.errors} 错</span>`
+          : p.warnings ? `<span class="tag">${p.warnings} 提示</span>`
+          : '<span class="tag ok">通过</span>'}</div>
+    </div>`).join('') : '<div class="hint">还没有项目</div>';
+  if (cur) {
+    const me = list.find(p => p.id === cur);
+    if (me) assets = me.assets;
+    renderThumbs();
+  }
+}
+async function createProject() {
+  const id = $('newId').value.trim();
+  const name = $('newName').value.trim();
+  try {
+    await api('/api/project/create', { id, name });
+    $('newId').value = ''; $('newName').value = '';
+    cur = id;
+    await loadProjects();
+    await selectProject(id);
+  } catch (e) { alert(e.message); }
+}
+async function selectProject(id) {
+  cur = id;
+  $('work').classList.remove('hidden');
+  $('curProj').textContent = id;
+  msg('assetMsg', '', ''); msg('aiMsg', '', ''); msg('packMsg', '', ''); msg('autoMsg', '', '');
+  await loadProjects();
+  await refreshCounts();
+}
+function openFolder() { api('/api/open', { kind: 'root' }).catch(() => alert('打开失败，手动去 E:\\AI\\Coopanion的宠物制作工具')); }
+function openDist() { api('/api/open', { kind: 'dist' }).catch(() => alert('还没有输出文件夹')); }
+function openPreview() {
+  if (!cur) return alert('先选一个项目');
+  window.open('/preview?id=' + encodeURIComponent(cur), '_blank');
+}
+
+/* ---------- assets ---------- */
+function renderThumbs() {
+  $('thumbs').innerHTML = assets.map((n, i) => `
+    <div class="thumb">
+      <img src="/api/thumb?id=${encodeURIComponent(cur)}&n=${encodeURIComponent(n)}&t=${Date.now()}"
+           onerror="this.style.opacity=.25">
+      <div class="n" title="${esc(n)}">${esc(n)}</div>
+      <button onclick="setMain('${esc(n)}')">设为主图</button>
+    </div>`).join('');
+}
+
+/* ---------- 分区上传 ---------- */
+let zoneSlot = 'body';
+function pick(slot) {
+  if (!cur) return alert('先选一个项目');
+  zoneSlot = slot;
+  const el = $('zoneInput');
+  el.accept = slot === 'sound'
+    ? '.wav,.mp3,.ogg,audio/wav,audio/mpeg,audio/ogg'
+    : 'image/png,image/jpeg,image/webp';
+  el.value = '';
+  el.click();
+}
+$('zoneInput').onchange = (e) => uploadSlot([...e.target.files], zoneSlot);
+$('videoInput').onchange = (e) => uploadVideo(e.target.files[0]);
+
+// 拖到分区上也行
+document.querySelectorAll('.zone').forEach((z) => {
+  z.ondragover = (e) => { e.preventDefault(); z.classList.add('hot'); };
+  z.ondragleave = () => z.classList.remove('hot');
+  z.ondrop = (e) => {
+    e.preventDefault(); z.classList.remove('hot');
+    uploadSlot([...e.dataTransfer.files], z.dataset.slot);
+  };
+});
+
+function readAsDataURL(file) {
+  return new Promise((ok, bad) => {
+    const r = new FileReader();
+    r.onload = () => ok(r.result);
+    r.onerror = bad;
+    r.readAsDataURL(file);
+  });
+}
+
+async function refreshCounts() {
+  if (!cur) return;
+  try {
+    const c = await api('/api/assets?id=' + encodeURIComponent(cur));
+    for (const k of ['body', 'walk', 'face', 'sit', 'sleep', 'sound']) {
+      const el = $('zc-' + k);
+      const zone = document.querySelector(`.zone[data-slot="${k}"]`);
+      const n = (c.counts || {})[k] || 0;
+      if (el) el.textContent = n;
+      if (zone) zone.classList.toggle('ok', n > 0);
+    }
+  } catch (e) { /* 计数失败不影响干活 */ }
+}
+
+async function uploadSlot(files, slot) {
+  if (!cur) return alert('先选一个项目');
+  if (!files.length) return;
+  const ok = slot === 'sound'
+    ? files.filter(f => /\.(wav|mp3|ogg)$/i.test(f.name))
+    : files.filter(f => f.type.startsWith('image/'));
+  if (!ok.length) {
+    return msg('assetMsg', 'err', slot === 'sound' ? '音效只认 wav / mp3 / ogg' : '没读到图片文件');
+  }
+  msg('assetMsg', 'info', `正在上传 ${ok.length} 个文件到「${SLOT_NAME[slot] || slot}」…`);
+  const payload = [];
+  for (const f of ok) payload.push({ name: f.name, slot, data: await readAsDataURL(f) });
+  try {
+    const r = await api('/api/project/upload', { id: cur, files: payload });
+    const bad = (r.files || []).filter(f => f.error);
+    const good = (r.files || []).length - bad.length;
+    msg('assetMsg', bad.length ? 'warn' : 'ok',
+      `收下 ${good} 个` + (bad.length ? '\n' + bad.map(b => b.name + '：' + b.error).join('\n') : ''));
+    if (r.synced && r.synced.length) msgList('assetMsg', 'info', '已同步进包', r.synced);
+    await loadProjects();
+    await refreshCounts();
+  } catch (e) { msg('assetMsg', 'err', e.message); }
+}
+
+const SLOT_NAME = { body: '主图', walk: '走路帧', face: '表情', sit: '坐姿', sleep: '睡姿', sound: '音效' };
+
+async function autoFill() {
+  if (!cur) return alert('先选一个项目');
+  msg('autoMsg', 'info', '正在生成。走路帧要算几秒，别关窗口…');
+  try {
+    const r = await api('/api/autogen', { id: cur });
+    const lines = (r.changes || []).join('\n');
+    msg('autoMsg', r.errors && r.errors.length ? 'warn' : 'ok',
+      lines || '没有要补的，都齐了。');
+    msgList('autoMsg', 'warn', '没动的部分', r.skipped || []);
+    msgList('autoMsg', 'err', '错误', r.errors || []);
+    await loadProjects();
+    await refreshCounts();
+  } catch (e) { msg('autoMsg', 'err', e.message); }
+}
+
+async function uploadVideo(file) {
+  if (!cur) return alert('先选一个项目');
+  if (!file) return;
+  if (file.size > 60 * 1024 * 1024) return msg('assetMsg', 'err', '视频超过 60 MB，先剪短一点');
+  msg('assetMsg', 'info', '正在抽帧，几十秒…');
+  try {
+    const r = await api('/api/project/video', { id: cur, name: file.name, data: await readAsDataURL(file), count: 6 });
+    msg('assetMsg', 'ok', `抽出 ${r.frames.length} 帧，已放进素材。点「设为主图」试哪张好`);
+    await loadProjects();
+  } catch (e) { msg('assetMsg', 'err', e.message); }
+}
+
+async function setMain(name) {
+  try {
+    const r = await api('/api/project/main', { id: cur, name });
+    msg('assetMsg', 'ok', `主图换成 ${name}。${r.note || ''}`);
+    await loadProjects();
+  } catch (e) { msg('assetMsg', 'err', e.message); }
+}
+
+/* ---------- ai / check / pack ---------- */
+async function aiGenerate() {
+  if (!cur) return alert('先选一个项目');
+  if (!$('brief').value.trim()) return msg('aiMsg', 'err', '先写一句你想要的宠物长什么样');
+  msg('aiMsg', 'info', '正在让模型写清单，通常 10-40 秒…');
+  try {
+    const r = await api('/api/ai/generate', { id: cur, brief: $('brief').value.trim() });
+    msg('aiMsg', 'ok', `写好 ${r.words} 个词。${r.errors.length ? '但还有 ' + r.errors.length + ' 个错，看下面的检查。' : '清单已经通过本地校验。'}`);
+    msgList('aiMsg', 'err', '错误', r.errors);
+    msgList('aiMsg', 'warn', '提示', r.warnings);
+    await loadProjects();
+  } catch (e) { msg('aiMsg', 'err', e.message); }
+}
+
+async function validate() {
+  if (!cur) return alert('先选一个项目');
+  msg('packMsg', 'info', '检查中…');
+  try {
+    const r = await api('/api/validate', { id: cur });
+    $('packMsg').innerHTML = '';
+    if (r.ok) msg('packMsg', 'ok', `通过。${r.info.words} 个词，${r.info.axes} 条装扮轴，${(r.info.size/1024).toFixed(0)} KB`);
+    else msg('packMsg', 'err', `有 ${r.errors.length} 个错误，Coopanion 会拒绝导入`);
+    msgList('packMsg', 'err', '必须改的错误', r.errors);
+    msgList('packMsg', 'warn', '不影响导入，但建议改', r.warnings);
+    if (r.syntax && r.syntax !== 'ok') msgList('packMsg', 'err', 'figure.js 语法问题', [r.syntax]);
+    if (r.contract) {
+      $('packMsg').insertAdjacentHTML('beforeend',
+        `<div class="msg info"><b>加载测试（模拟 Coopanion 装载这一包）</b><pre style="margin:6px 0 0;white-space:pre-wrap;font-size:12px;line-height:1.5">${esc(r.contract)}</pre></div>`);
+    }
+    await loadProjects();
+  } catch (e) { msg('packMsg', 'err', e.message); }
+}
+
+async function autofix() {
+  if (!cur) return alert('先选一个项目');
+  msg('packMsg', 'info', '正在修 figure.json，原件会备份到项目的 backup 文件夹…');
+  try {
+    const r = await api('/api/fix', { id: cur });
+    $('packMsg').innerHTML = '';
+    const n = (r.changes || []).length;
+    if (n) {
+      msg('packMsg', 'ok', `修了 ${n} 处。原件已备份：${r.backup}`);
+      msgList('packMsg', 'ok', '改了什么', r.changes);
+    } else {
+      msg('packMsg', 'ok', `清单本来就是对的，没有要改的地方。备份：${r.backup}`);
+    }
+    if (r.dropped && r.dropped.length) {
+      msgList('packMsg', 'warn', '这些词被移出 vocab（不是表情也不是动作，留着也会被跳过）', r.dropped);
+    }
+    if (r.errors && r.errors.length) msgList('packMsg', 'err', '还剩这些要你自己改', r.errors);
+    else msg('packMsg', 'ok', '现在可以通过了，点「打包成 zip」');
+    if (r.warnings && r.warnings.length) msgList('packMsg', 'warn', '提示', r.warnings);
+    await loadProjects();
+  } catch (e) { msg('packMsg', 'err', e.message); }
+}
+
+async function cleanFaces() {
+  if (!cur) return alert('先选一个项目');
+  if (!confirm('把还是模板原样的表情图挪到 tex\\_unused\\ 里？\n不删文件，随时能拿回来。')) return;
+  try {
+    const r = await api('/api/clean-faces', { id: cur });
+    const moved = r.moved || [];
+    msg('packMsg', 'ok', moved.length ? `挪走了 ${moved.length} 张：${moved.join('、')}\n它们现在在 tex\\_unused\\ 里` : '没有发现模板占位表情，不用挪');
+    if (r.warnings && r.warnings.length) msgList('packMsg', 'warn', '提示', r.warnings);
+  } catch (e) { msg('packMsg', 'err', e.message); }
+}
+
+async function pack() {
+  if (!cur) return alert('先选一个项目');
+  msg('packMsg', 'info', '打包中…');
+  try {
+    const r = await api('/api/package', { id: cur });
+    msg('packMsg', 'ok', `打好了：${r.zip}\n大小 ${(r.size/1024).toFixed(0)} KB\n\n下一步：Coopanion → 装扮 → 导入形象包 → 选这个 zip`);
+  } catch (e) { msg('packMsg', 'err', e.message); }
+}
+
+/* serve raw images for the thumbnail strip */
+(async function boot() {
+  await loadConfig();
+  await loadProjects();
+  await loadEnv();
+  // 支持 ?id=yy 直接打开某个项目，方便发给别人看
+  const want = new URLSearchParams(location.search).get('id');
+  if (want) {
+    try {
+      const list = await api('/api/projects');
+      if (list.some(p => p.id === want)) await selectProject(want);
+    } catch (e) { /* 打不开就留在首页 */ }
+  }
+})();
+</script>
+</body>
+</html>
