@@ -66,6 +66,27 @@ Windows 双击 **`start.bat`**。macOS / Linux 用 `./start.sh`。
 装进 Coopanion：**装扮 → 导入形象包 → 选这个 zip**。
 同一个 id 再导入一次，它会问你要不要替换。
 
+## 下载测试包
+
+[v1.1.0 发布页](https://github.com/qq1402094463/coopanion-pet-pack-studio/releases/tag/v1.1.0) 下面挂了 10 个用这个工具做出来的真包。
+故意没打磨，就是为了让你踩坑。装不上、装上了不对劲，带上包名开 issue。
+
+下载 zip 直接导入：**Coopanion → 导入形象包 → 选 zip**，不用解压。
+
+| 文件 | id | 大小 | 里面有什么 | 适合测什么 |
+|---|---|---|---|---|
+| [`yy-1.2.0.zip`](https://github.com/qq1402094463/coopanion-pet-pack-studio/releases/download/v1.1.0/yy-1.2.0.zip) | `yy` | 5.2 MB | 6 表情 + 走 6 帧 + 坐 + 睡 + 20 音效 | 主力样例，应当一次导入成功 |
+| [`yy-1.1.0.zip`](https://github.com/qq1402094463/coopanion-pet-pack-studio/releases/download/v1.1.0/yy-1.1.0.zip) | `yy` | 5.0 MB | 同上，没有音效 | 从 1.1 升级到 1.2 |
+| [`f1-1.0.0.zip`](https://github.com/qq1402094463/coopanion-pet-pack-studio/releases/download/v1.1.0/f1-1.0.0.zip) | `mypet` | 1.3 MB | 3 表情 + 走 + 坐 + 睡 + 音效 | 常规全自动产物 |
+| [`newpet-1.0.0.zip`](https://github.com/qq1402094463/coopanion-pet-pack-studio/releases/download/v1.1.0/newpet-1.0.0.zip) | `newpet` | 1.3 MB | 一张表情图都没有 | 空表情能不能撑住 |
+| [`demo-pet-1.0.0.zip`](https://github.com/qq1402094463/coopanion-pet-pack-studio/releases/download/v1.1.0/demo-pet-1.0.0.zip) | `demo-pet` | 40 KB | 7 个文件，3 表情，无音效 | 最小可运行包 |
+| [`t2-1.0.0.zip`](https://github.com/qq1402094463/coopanion-pet-pack-studio/releases/download/v1.1.0/t2-1.0.0.zip) | `mypet` | 17 KB | 只有 figure.js / figure.json / thumb / body.png | 极限瘦身，看哪里先崩 |
+
+`f1` / `f2` / `auto1` / `s1` / `t2` 的 id 都是 `mypet`，装第二个会顶掉第一个。
+这是官方同 id 替换逻辑，不是 bug。想并排装，先改 `figure.json` 里的 `id`。
+
+全部包按官方硬限制过了一遍：128 MB / 2048 文件 / 单文件 16 MB / 清单 256 KB。
+
 ## 两条路
 
 **A. 逐帧做（质量最好）**
