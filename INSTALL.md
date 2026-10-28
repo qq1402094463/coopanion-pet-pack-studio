@@ -9,7 +9,7 @@
 已经装好 Python 3.10+ 的话，执行这三步就够：
 
 ```bash
-git clone https://github.com/<you>/coopanion-pet-pack-studio.git
+git clone https://github.com/qq1402094463/coopanion-pet-pack-studio.git
 cd coopanion-pet-pack-studio
 python -m pip install -r requirements.txt
 ```
@@ -216,7 +216,7 @@ Coopanion 自己的形象包工具也可能用 8848，两个同时开就会撞�
 **Requirements:** Python 3.10+, Pillow. Optional: ffmpeg (video frame extraction), Node 18+ (test script).
 
 ```bash
-git clone https://github.com/<you>/coopanion-pet-pack-studio.git
+git clone https://github.com/qq1402094463/coopanion-pet-pack-studio.git
 cd coopanion-pet-pack-studio
 python -m pip install -r requirements.txt
 ```

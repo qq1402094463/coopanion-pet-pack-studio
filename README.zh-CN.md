@@ -9,6 +9,9 @@
 
 [English](README.md) · [安装说明](INSTALL.md) · [功能说明](docs/功能说明.md) · [格式规范](docs/02-形象包格式规范.md)
 
+> 这个工具同时挂在 Coopanion 的 fork 上（[`pet-pack-studio` 分支](https://github.com/qq1402094463/Coopanion/tree/pet-pack-studio/tools/pet-pack-studio)），
+> 所以在官方仓库的 fork 列表里也能点进来。
+
 ![制作台界面](docs/images/studio.png)
 
 ---
@@ -43,7 +46,7 @@
 ## 三步跑起来
 
 ```bash
-git clone https://github.com/<you>/coopanion-pet-pack-studio.git
+git clone https://github.com/qq1402094463/coopanion-pet-pack-studio.git
 cd coopanion-pet-pack-studio
 python -m pip install -r requirements.txt
 ```

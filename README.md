@@ -9,6 +9,10 @@
 
 [中文说明](README.zh-CN.md) · [安装](INSTALL.md) · [功能说明](docs/功能说明.md) · [格式规范](docs/02-形象包格式规范.md)
 
+> Also mirrored on the Coopanion fork as
+> [`pet-pack-studio` branch](https://github.com/qq1402094463/Coopanion/tree/pet-pack-studio/tools/pet-pack-studio),
+> so it shows up next to the app itself.
+
 ![Pet Pack Studio](docs/images/studio.png)
 
 ---
@@ -45,7 +49,7 @@ want an LLM to write the manifest.
 ## Quick start
 
 ```bash
-git clone https://github.com/<you>/coopanion-pet-pack-studio.git
+git clone https://github.com/qq1402094463/coopanion-pet-pack-studio.git
 cd coopanion-pet-pack-studio
 python -m pip install -r requirements.txt
 ```
