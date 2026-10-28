@@ -73,26 +73,17 @@ Then, in the page:
 
 In Coopanion: **Dress up → Import figure pack → pick the zip**. Same `id` again later and it asks whether to replace.
 
-## Sample packs to download
+## Sample pack to download
 
-Ten real packs built with this tool, attached to the [v1.1.0 release](https://github.com/qq1402094463/coopanion-pet-pack-studio/releases/tag/v1.1.0).
-They are unpolished on purpose — install them, try to break them, open an issue with the file name.
+One complete pack made with this tool is attached to the [v1.1.0 release](https://github.com/qq1402094463/coopanion-pet-pack-studio/releases/tag/v1.1.0).
 
-Download any `.zip` and import it directly: **Coopanion → Import figure pack → pick the zip**. No unpacking.
+| File | id | Size | Inside |
+|---|---|---|---|
+| [`yy-1.2.0.zip`](https://github.com/qq1402094463/coopanion-pet-pack-studio/releases/download/v1.1.0/yy-1.2.0.zip) | `yy` | 5.2 MB | 6 expressions, a 6-frame walk, sit, sleep, 20 sounds |
 
-| File | id | Size | Inside | What it tests |
-|---|---|---|---|---|
-| [`yy-1.2.0.zip`](https://github.com/qq1402094463/coopanion-pet-pack-studio/releases/download/v1.1.0/yy-1.2.0.zip) | `yy` | 5.2 MB | 6 faces, 6 walk frames, sit, sleep, 20 sounds | the main sample, should import clean |
-| [`yy-1.1.0.zip`](https://github.com/qq1402094463/coopanion-pet-pack-studio/releases/download/v1.1.0/yy-1.1.0.zip) | `yy` | 5.0 MB | same, no sounds | upgrading 1.1 → 1.2 |
-| [`f1-1.0.0.zip`](https://github.com/qq1402094463/coopanion-pet-pack-studio/releases/download/v1.1.0/f1-1.0.0.zip) | `mypet` | 1.3 MB | 3 faces, walk, sit, sleep, sounds | a normal auto-generated pack |
-| [`newpet-1.0.0.zip`](https://github.com/qq1402094463/coopanion-pet-pack-studio/releases/download/v1.1.0/newpet-1.0.0.zip) | `newpet` | 1.3 MB | no face images at all | does an empty face set still work |
-| [`demo-pet-1.0.0.zip`](https://github.com/qq1402094463/coopanion-pet-pack-studio/releases/download/v1.1.0/demo-pet-1.0.0.zip) | `demo-pet` | 40 KB | 7 files, 3 faces, no sounds | smallest runnable pack |
-| [`t2-1.0.0.zip`](https://github.com/qq1402094463/coopanion-pet-pack-studio/releases/download/v1.1.0/t2-1.0.0.zip) | `mypet` | 17 KB | only `figure.js` / `figure.json` / `thumb` / `body.png` | how little a pack can get away with |
+Download it and import it directly: **Coopanion → Import figure pack → pick the zip**. No unpacking.
 
-`f1`, `f2`, `auto1`, `s1` and `t2` all share the id `mypet`. Installing a second one replaces the first —
-that is the intended same-id upgrade path, not a bug. Change `id` in `figure.json` to keep several at once.
-
-Every pack was checked against the real import limits: 128 MB, 2048 files, 16 MB per file, 256 KB manifest.
+Checked against the real import limits: 128 MB, 2048 files, 16 MB per file, 256 KB manifest.
 
 ## Two ways to make a pack
 
